@@ -30,7 +30,7 @@ public class Name {
     public static void main(String[] args) {
         Name myClient = new Name();
         try {
-            myClient.insertName("hello1", "oak.ece.utexas.edu", 1000);
+            myClient.insertName("hello1", Symbols.nameServer, 1000);
             PortAddr pa = myClient.searchName("hello1");
             System.out.println(pa.getHostName() + ":" + pa.getPort());
         } catch (Exception e) {

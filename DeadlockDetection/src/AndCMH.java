@@ -21,29 +21,13 @@ public class AndCMH extends Process {
 	}
 	
 	public void sendMsg(int destId, String tag, String msg) {
-        super.sendMsg(destId, tag, msg);
-        if (tag == "REQUEST")
+		//if(!(myId==0 && tag.equals("REPLY")))
+		if(!(tag.equals("REPLY")))
+			super.sendMsg(destId, tag, msg);
+        if (tag.equals("REQUEST")) {
         	++requests[destId];
-        else if (tag == "REPLY")
-        	--replies[destId];
-    }
-	
-	public synchronized void handleMsg(Msg m, int src, String tag) {
-		if (tag == "REQUEST") {
-			sendMsg(src, "REPLY", "");
-			++replies[src];
-		}
-		else if (tag == "REPLY") {
-			--requests[src];
-			//if (IntStream.of(requests).allMatch(x -> (x==0)))
-			blocked = false;
-			for (int i=0; i<N; ++i)
-				if (requests[i] != 0) {
-					blocked = true;
-					break;
-				}
-			
-			if (blocked) {
+			blocked=true;
+			if(blocked) {
 				if (dependent[myId])
 					DeclareDeadlock();
 				else {
@@ -53,8 +37,30 @@ public class AndCMH extends Process {
 				}
 			}
 		}
-		else if (tag == "PROBE") {
+       // else if (!(myId==0 && tag.equals("REPLY")))
+       // 	--replies[destId];
+    }
+	
+	public synchronized void handleMsg(Msg m, int src, String tag) {
+		if (tag.equals("REQUEST")) {
+			Util.mySleep(5000);
+			sendMsg(src, "REPLY", "");
+			++replies[src];
+		}
+		else if (tag.equals("REPLY")) {
+			blocked=false;
+			--requests[src];
+			//if (IntStream.of(requests).allMatch(x -> (x==0)))
+			blocked = false;
+			for (int i=0; i<N; ++i)
+				if (requests[i] != 0) {
+					blocked = true;
+					break;
+				}
+		}
+		else if (tag.equals("PROBE")) {
 			if (blocked && !dependent[m.getMessageInt()] && replies[src]>0) {
+				Util.println("Tu sam");
 				dependent[m.getMessageInt()] = true;
 				if (myId == m.getMessageInt())
 					DeclareDeadlock();
