@@ -24,8 +24,8 @@ public class AndCMH extends Process {
 		//if(!(myId==0 && tag.equals("REPLY")))
 		if(!(tag.equals("REPLY")))
 			super.sendMsg(destId, tag, msg);
-        if (tag.equals("REQUEST")) {
-        	++requests[destId];
+    if (tag.equals("REQUEST")) {
+    	++requests[destId];
 			blocked=true;
 			if(blocked) {
 				if (dependent[myId])
