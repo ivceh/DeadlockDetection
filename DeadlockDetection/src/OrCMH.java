@@ -16,11 +16,13 @@ public class OrCMH extends Process {
 	public void Initialize(int initialRequests[]) {
 	  for(int i=0; i<initialRequests.length; ++i) {
 		  sendMsg(initialRequests[i], "REQUEST", "");
-      dependent[i] = true;
+      dependent[initialRequests[i]] = true;
 	  }
     // process 0 initiates difussion computation
     if(myId == 0) {
-      for(int j=0; j<N; j++)
+      Util.println("sleeping 1s before initiating diffusion computation...");
+      Util.mySleep(1000);
+      for(int j=0; j<N; ++j)
         if(dependent[j]) {
           sendMsg(j, "QUERY", myId);
           num[myId]++;
@@ -30,22 +32,20 @@ public class OrCMH extends Process {
 	}
 	
 	public void sendMsg(int destId, String tag, String msg) {
-		//if(!(myId==0 && tag.equals("REPLY")))
-		if(!(tag.equals("REPLY")))
-			super.sendMsg(destId, tag, msg);
+		super.sendMsg(destId, tag, msg);
   }
 	
 	public synchronized void handleMsg(Msg m, int src, String tag) {
     if(tag.equals("QUERY")) {
       int initiator = m.getMessageInt();
-      if(!wait[src]) {
+      if(!wait[initiator]) {
         // this is the engaging query for process src, send queries to all dependent
-        for(int j=0; j<N; j++)
+        for(int j=0; j<N; ++j)
           if(dependent[j]) {
             sendMsg(j, "QUERY", initiator);
-            num[myId]++;
+            num[initiator]++;
           }
-        wait[src] = true;
+        wait[initiator] = true;
       } else {
         sendMsg(src, "REPLY", initiator);  
       }
