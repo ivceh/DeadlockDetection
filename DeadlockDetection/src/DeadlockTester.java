@@ -13,6 +13,8 @@ public class DeadlockTester {
 			proc = new SingleMM(comm, initialRequests);
 		else if (args[3].equals("AndCMH"))
 			proc = new AndCMH(comm, initialRequests);
+    else if (args[3].equals("OrCMH"))
+			proc = new OrCMH(comm, initialRequests);
 		else
 			throw new IllegalArgumentException("Unknown algorithm!");
 		
